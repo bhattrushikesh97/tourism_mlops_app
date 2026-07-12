@@ -47,7 +47,7 @@ st.set_page_config(
 st.title("✈️ Tourism Package Prediction")
 
 st.markdown("""
-Predict whether a customer is likely to purchase the
+Predict whether a customer is likely  to purchase the
 ** Tourism Package**.
 """)
 

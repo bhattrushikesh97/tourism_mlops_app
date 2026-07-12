@@ -1,0 +1,98 @@
+name: Tourism Package Prediction
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  register-dataset:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r tourism_project_Prediction/requirements.txt
+
+      - name: Upload Dataset to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tourism_project_Prediction/model_building/data_register.py
+
+
+  data-prep:
+    needs: register-dataset
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r tourism_project_Prediction/requirements.txt
+
+      - name: Run Data Preparation
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tourism_project_Prediction/model_building/prep.py
+
+
+  model-training:
+    needs: data-prep
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r tourism_project_Prediction/requirements.txt
+
+      - name: Train Model
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tourism_project_Prediction/model_building/train.py
+
+
+  deploy-hosting:
+    needs: model-training
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r tourism_project_Prediction/requirements.txt
+
+      - name: Deploy to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tourism_project_Prediction/hosting/hosting.py
